@@ -176,13 +176,22 @@ export const featurePost = async (req, res) => {
   res.status(200).json(updatedPost);
 };
 
-const imagekit = new ImageKit({
-  urlEndpoint: process.env.IK_URL_ENDPOINT,
-  publicKey: process.env.IK_PUBLIC_KEY,
-  privateKey: process.env.IK_PRIVATE_KEY,
-});
+let imagekit;
+
+if (process.env.IMAGEKIT_PUBLIC_KEY && process.env.IMAGEKIT_PRIVATE_KEY && process.env.IMAGEKIT_URL_ENDPOINT) {
+  imagekit = new ImageKit({
+    urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT,
+    publicKey: process.env.IMAGEKIT_PUBLIC_KEY,
+    privateKey: process.env.IMAGEKIT_PRIVATE_KEY,
+  });
+} else {
+  console.warn("⚠️  ImageKit credentials not fully configured. Image upload will be disabled.");
+}
 
 export const uploadAuth = async (req, res) => {
+  if (!imagekit) {
+    return res.status(500).json({ message: "ImageKit is not configured. Please add credentials to .env file." });
+  }
   const result = imagekit.getAuthenticationParameters();
   res.send(result);
 };

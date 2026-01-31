@@ -1,3 +1,4 @@
+import "dotenv/config.js";
 import express from "express";
 import connectDB from "./lib/connectDB.js";
 import userRouter from "./routes/user.route.js";
@@ -58,7 +59,9 @@ app.use((error, req, res, next) => {
   });
 });
 
-app.listen(3000, () => {
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
   connectDB();
-  console.log("Server is running!");
+  console.log(`Server is running on port ${PORT}!`);
 });
